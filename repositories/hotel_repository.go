@@ -21,6 +21,19 @@ func NewHotelRepository(db *mongo.Database) *HotelRepository {
 	}
 }
 
+func (r *HotelRepository) CreateHotel(hotel models.Hotel) (*models.Hotel, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := r.db.InsertOne(ctx, hotel)
+	if err != nil {
+		return nil, err
+	}
+
+	hotel.ID = result.InsertedID.(primitive.ObjectID)
+	return &hotel, nil
+}
+
 func (r *HotelRepository) GetHotels() ([]models.Hotel, error) {
 	var hotels []models.Hotel
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -41,19 +54,6 @@ func (r *HotelRepository) GetHotels() ([]models.Hotel, error) {
 	}
 
 	return hotels, nil
-}
-
-func (r *HotelRepository) CreateHotel(hotel models.Hotel) (*models.Hotel, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	result, err := r.db.InsertOne(ctx, hotel)
-	if err != nil {
-		return nil, err
-	}
-
-	hotel.ID = result.InsertedID.(primitive.ObjectID)
-	return &hotel, nil
 }
 
 func (r *HotelRepository) GetHotelById(id string) (*models.Hotel, error) {

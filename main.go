@@ -9,17 +9,18 @@ import (
 )
 
 func main() {
-	r := echo.New()
+	r := echo.New() // echo init
 
-	db, err := config.ConnectDB()
+	db, err := config.ConnectDB() // connect to DB
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	hotelHandler := handlers.NewHotelHandler(db)
+	hotelHandler := handlers.NewHotelHandler(db) // init handler
+
+	r.POST("/hotel", hotelHandler.CreateHotel)
 
 	r.GET("/hotels", hotelHandler.GetHotels)
-	r.POST("/hotel", hotelHandler.CreateHotel)
 	r.GET("/hotel/:id", hotelHandler.GetHotelById)
 	r.PUT("/hotel/:id", hotelHandler.UpdateHotel)
 	r.DELETE("/hotel/:id", hotelHandler.DeleteHotel)
